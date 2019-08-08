@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+
+<!-- This html script must be used into a configured virtual host in your Web Server -->
+
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Boacompra Direct Checkout Test</title>
+
+        <!-- Script loaded with a dynamic parameter (?p=999999) value to invalidate the browser cache. -->
+        <script type="text/javascript" src="https://stc.boacompra.com/payment.boacompra.min.js?p=999999"></script>
+
+        <script type="text/javascript">
+            // You MUST instance the payment object ASAP after add the javascript on page,
+            // it will prevent loading time issues in the flow.
+            var payment = new Boacompra.PaymentMethod();
+        </script>
+    </head>
+
+    <body>
+        <a href="javascript:charge()" target="_self">Click here to Generate the DirectToken</a>
+
+        <script type="text/javascript">
+            // Example: https://developers.boacompra.com/direct-checkout/#creating-a-credit-card-payment
+
+            function charge() {
+                // User's credit card data should be collected in a html form
+                var cardData = {
+                    creditCard: '5555666677778884',
+                    cvv: '123',
+                    expiration: {
+                        month: '02',
+                        year: '2026'
+                    }
+                };
+
+                //callback function will contain errors or a directToken
+                var callback = function(err, directToken) {
+                    if (err) {
+                        // Check all errors in:
+                        // https://developers.boacompra.com/direct-checkout/#direct-payment-js
+                        alert('Error: ' + err);
+
+                        return false;
+                    }
+
+                    alert('Success!\ndirect-token: ' + directToken + '\n\nUse them to create your transaction.');
+
+                    // Post [directToken + user data, previously collected from html forms] to your server (Ajax request)
+
+                    // The directToken parameter will be used to create your transaction
+                    // on the endpoint https://api.boacompra.com/transactions
+
+                    // The directToken parameter and others are descibed in our Manual:
+                    // https://developers.boacompra.com/direct-checkout/#transaction-api
+                };
+
+                payment.getDirectToken(cardData, callback);
+            }
+        </script>
+    </body>
+</html>
